@@ -37,3 +37,29 @@ app.post('/api/freelancers', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+const stripe = require('stripe')('votre_cle_stripe_secrete');
+
+// Exemple de route pour créer une session de paiement
+app.post('/api/create-checkout-session', async (req, res) => {
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Freelance Service',
+          },
+          unit_amount: req.body.amount,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    success_url: 'https://votre_site.com/success',
+    cancel_url: 'https://votre_site.com/cancel',
+  });
+
+  res.json({ id: session.id });
+});

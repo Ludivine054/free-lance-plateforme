@@ -16,3 +16,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       freelancersDiv.appendChild(div);
   });
 });
+
+// public/script.js
+document.getElementById('checkout-button').addEventListener('click', async () => {
+  const response = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ amount: 1000 }) // Exemple : $10.00
+  });
+  const session = await response.json();
+
+  const stripe = Stripe('votre_cle_stripe_publique');
+  stripe.redirectToCheckout({ sessionId: session.id });
+});
